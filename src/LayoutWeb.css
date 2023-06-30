@@ -1,0 +1,30 @@
+.logo{
+    font-family: 'Jua', sans-serif;
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    font-size: 3rem;
+}
+.voices{
+    -webkit-transition: width 2s ease;
+    transition: width 2s ease;
+    transition-delay: 0s;
+}
+.chats{
+    z-index: -1;
+    -webkit-transition: width 2s ease;
+    transition: width 2s ease;
+    transition-delay: 0s;
+}
+.voices.true{
+    width: 40%;
+}
+.chats.true{
+    width: 60%;
+    height: 100%;
+    z-index: 1;
+}
+.user{
+    width: 120px;
+    height: 120px;
+}
