@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./layout.css";
 import logo from "./Utils/nouser1.png";
-import botLogo from "./Utils/user1.png";import { Configuration, OpenAIApi } from "openai";
+import botLogo from "./Utils/user1.png";
+import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";

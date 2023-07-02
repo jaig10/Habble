@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
     BrowserRouter as Router,
     Route,
@@ -13,7 +14,11 @@ import './App.css'
   
   export const App = () => {
   
-  
+    const [width, setWidth] = React.useState(window.innerWidth);
+    const breakpoint = 1024;
+    React.useEffect(() => {
+      window.addEventListener("resize", () => setWidth(window.innerWidth));
+    }, []);
   
     return (
       <>
@@ -21,7 +26,8 @@ import './App.css'
         <Routes>
             <Route path='/chat' element={<Chatbot/>} />
             {/* <Route path='/' element={<LayoutWeb/>} /> */}
-            <Route path='/' element={<Layout/>} />
+            {/* <Route path='/' element={<Layout/>} /> */}
+            <Route path='/' element={width < breakpoint ? <Layout /> : <LayoutWeb />} />
             {/* <Route path='/testing' element={<Home/>} /> */}
         </Routes>
       </Router>
