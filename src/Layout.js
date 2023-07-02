@@ -1,15 +1,115 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./layout.css";
 import logo from "./user.jpeg"
+import { Configuration, OpenAIApi } from "openai";
+import { useWhisper } from "@chengsokdara/use-whisper";
+import { useSpeechSynthesis } from "react-speech-kit";
+import BotAudio from "./BotAudio";
+
+const configuration = new Configuration({
+  apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
+});
+delete configuration.baseOptions.headers["User-Agent"]; //because calling api from frontend
+const openai = new OpenAIApi(configuration);
+console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
+
 
 function Layout() {
-  const [isTyping, setIsTyping] = useState(true)
-  const [chats, SetChats] = useState([{"role":"user","content":"Hello Hello How are you?"},{"role":"assistant","content":"{\"reply\": \"Hello! I'm doing great, thank you for asking. How about you? How has your day been so far?\", \"feedback\": \"Good grammar and vocabulary. Just make sure to use proper capitalization for the first word of a sentence.\"}"},{"role":"user","content":"ok"}])
-  
+  const [message, setMessage] = useState("");
+  const [chats, setChats] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
   const [swpDwn, setSwpDwn] = useState(true);
+  const [userIsSpeaking, setUserIsSpeaking] = useState(false);
+
   function handleSwipe() {
     setSwpDwn((swpDwn) => !swpDwn);
   }
+
+  function handleMicPress(){
+    userIsSpeaking? stopRecording() : startRecording()
+    setUserIsSpeaking(!userIsSpeaking)
+  }
+
+  const { transcript, startRecording, stopRecording } = useWhisper({
+    apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
+  });
+
+  const { speak } = useSpeechSynthesis();
+  let speech = new SpeechSynthesisUtterance();
+  speech.lang = "en-US";
+  let voices = []; // global array
+
+  window.speechSynthesis.onvoiceschanged = () => {
+    // Get List of Voices
+    voices = window.speechSynthesis.getVoices();
+    // console.log(voices);
+    speech.voice = voices[3];
+    // speech.voice = res1.audioUrl;
+    // console.log(voices[3]);
+    // console.log(speech.lang);
+    // Initially set the First Voice in the Array.
+
+    // Set the Voice Select List. (Set the Index as the value, which we'll use later when the user updates the Voice using the Select Menu.)
+    // let voiceSelect = document.querySelector("#voices");
+    // voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
+  };
+
+  const chat = async ( message) => {
+    // e.preventDefault();
+
+    if (!message) return;
+    setIsTyping(true);
+    window.scrollTo(0, 1e10);
+    // console.log(chats)
+    let msgs = chats;
+    msgs.push({ role: "user", content: message });
+    setChats(msgs);
+
+    setMessage("");
+
+    await openai
+      .createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: `you are languageGPT an assistant to help me improve my english language and conversation skills. You have to act like we are a tinder match and have a conversation with me. Reply should be a proper sentence and make up details about yourself if required.along with reply, include a short feedback of the grammar, vocabulary (ignore punctuations) and what can be improved in my previous message. use only the following json format and do not return any text outside the json object. format: {"reply": "CHAT_REPLY", "feedback": "FEEDBACK"} Your response should not contain any text outside of the curly braces as used in format`,
+          },
+          {
+            role: "user",
+            content: "Hi! What is your name",
+          },
+          {
+            role: "assistant",
+            content: `{"reply":"My name is Habble, and I'm excited to get to know you! What brings you to Tinder?", "feedback":"Good grammar and vocabulary. Keep it up!"}`,
+          },
+          ...chats,
+        ],
+      })
+      .then((res) => {
+        msgs.push(res.data.choices[0].message);
+        setChats(msgs);
+        window.scrollTo(0, 1e10);
+        let assistantMessage = JSON.parse(res.data.choices[0].message.content);
+        // speak({text: assistantMessage.reply})//text to speech
+        // console.log(assistantMessage.reply);
+        BotAudio(assistantMessage.reply);
+        setIsTyping(false);
+        // speech.text = assistantMessage.reply;
+        // window.speechSynthesis.speak(speech);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  
+  useEffect(() => {
+    setMessage(transcript.text);
+    console.log(transcript.text)
+    chat(transcript.text)
+  }, [transcript.text]);
+
   return (
     <div className="h-screen bg-grey">
       {swpDwn && (
@@ -27,7 +127,7 @@ function Layout() {
         </div>
       )}
       {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
-        <div className="chat m-4 flex-col flex gap-5"> 
+        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
           {chats && chats.length
               ? chats.map((chat, index) => {
                   if (chat.role === "user") {
@@ -102,7 +202,7 @@ function Layout() {
         </div>
         <div
           className="w-22 h-22 mx-2 bg-lightgrey rounded-full p-4 flex justify-center items-center"
-          onClick={handleSwipe}
+          onClick={handleMicPress}
         >
           <span className="material-symbols-outlined icon-sz decoration-blue">mic</span>
         </div>

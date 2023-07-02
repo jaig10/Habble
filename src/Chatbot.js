@@ -114,6 +114,7 @@ const configuration = new Configuration({
 delete configuration.baseOptions.headers["User-Agent"]; //because calling api from frontend
 const openai = new OpenAIApi(configuration);
 console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
+
 function Chatbot() {
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState([]);
@@ -143,8 +144,8 @@ function Chatbot() {
     // voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
   };
 
-  const chat = async (e, message) => {
-    e.preventDefault();
+  const chat = async ( message) => {
+    // e.preventDefault();
 
     if (!message) return;
     setIsTyping(true);
@@ -194,6 +195,8 @@ function Chatbot() {
 
   useEffect(() => {
     setMessage(transcript.text);
+    console.log(transcript.text)
+    chat(transcript.text)
   }, [transcript.text]);
 
   return (
