@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./layout.css";
-import logo from "./user.jpeg"
+import logo from "./Utils/nouser1.png";
+import botLogo from "./Utils/user1.png";
 import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
@@ -19,10 +20,14 @@ function Layout() {
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [swpDwn, setSwpDwn] = useState(true);
+  const [talk, setTalk] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
 
   function handleSwipe() {
     setSwpDwn((swpDwn) => !swpDwn);
+  }
+  function handleTalk() {
+    setTalk((talk) => !talk);
   }
 
   function handleMicPress(){
@@ -114,16 +119,58 @@ function Layout() {
     <div className="h-screen bg-grey">
       {swpDwn && (
         <div className="voice bg-grey flex flex-col justify-center items-center">
-              <img
-                className="rounded-full border user-sz mb-5 border-gray-100 shadow-sm"
-                src="https://randomuser.me/api/portraits/women/81.jpg"
-                alt="user image"
-              />
-              <img
-                className="rounded-full border user-sz border-gray-100 shadow-sm"
-                src={logo}
-                alt="user image"
-              />
+          <div className="user-sz flex justify-center items-center mb-10">
+            <img
+              className="rounded-full border border-gray-100 shadow-sm"
+              src={botLogo}
+              alt="bot image"
+            ></img>
+            {talk && (
+              <svg
+                className="absolute"
+                width="220"
+                height="220"
+                viewBox="0 0 236 236"
+                preserveAspectRatio="xMidYMin"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="Group 551">
+                  <g id="Group 30">
+                    <circle
+                      id="Ellipse 4"
+                      cx="118.5"
+                      cy="118.5"
+                      r="106"
+                      stroke="#BCBCBC"
+                      strokeOpacity="0.8"
+                      strokeWidth="5"
+                    />
+                  </g>
+                  <g id="Group 549">
+                    <circle
+                      id="Ellipse 4_2"
+                      cx="118"
+                      cy="118"
+                      r="115.5"
+                      stroke="#868686"
+                      strokeOpacity="0.8"
+                      strokeWidth="5"
+                    />
+                  </g>
+                </g>
+              </svg>
+            )}
+          </div>
+          <div className="user-sz flex justify-center items-center">
+            <img
+              className="rounded-full border border-gray-100 shadow-sm"
+              src={logo}
+              // habble-chatbot-main\Utils\nouser.jpg
+              alt="user image"
+              onClick={handleTalk}
+            ></img>
+          </div>
         </div>
       )}
       {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
@@ -204,7 +251,9 @@ function Layout() {
           className="w-22 h-22 mx-2 bg-lightgrey rounded-full p-4 flex justify-center items-center"
           onClick={handleMicPress}
         >
-          <span className="material-symbols-outlined icon-sz decoration-blue">mic</span>
+          <span className="material-symbols-outlined icon-sz decoration-blue">
+            mic
+          </span>
         </div>
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
