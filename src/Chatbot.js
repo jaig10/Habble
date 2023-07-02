@@ -271,6 +271,7 @@ function Chatbot() {
       <button className="bg-red-300" onClick={() => stopRecording()}>
         Stop
       </button>
+      {JSON.stringify(chats)}
     </main>
   );
 }
