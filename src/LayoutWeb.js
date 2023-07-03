@@ -229,7 +229,7 @@ function LayoutWeb() {
           </div>
         </div>
         <div
-          className={`chats ${chatVisible} bg-white  absolute top-0 right-0 z-0`}
+          className={`chats ${chatVisible} bg-white  absolute top-0 right-0`}
         >
         <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
         <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 

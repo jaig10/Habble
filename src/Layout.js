@@ -7,7 +7,7 @@ import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
 
-const configuration = new Configuration({
+const configuration = new Configuration({ 
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
 });
 delete configuration.baseOptions.headers["User-Agent"]; //because calling api from frontend
@@ -227,7 +227,7 @@ function Layout() {
         <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
         </div>
         </div>}
-      <div className="controls absolute bottom-0 w-full h-[33%] bg-grey flex justify-center items-center">
+      <div className="controls absolute bottom-0 w-full bg-grey flex justify-center items-center">
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full  flex justify-center items-center"
           onClick={handleSwipe}
