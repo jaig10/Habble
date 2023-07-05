@@ -236,8 +236,14 @@ function Layout() {
         </div>
       )}
 
-      <Chats chats={chats} isTyping={isTyping} swpDwn={swpDwn}/>
-
+      {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
+        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
+          <Chats chats={chats} isTyping={isTyping} swpDwn={swpDwn}/>
+        </div>
+        {/* gray line at the end */}
+        <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
+        </div>
+        </div>}
       <div className="controls absolute bottom-0 w-full h-[33%] bg-grey flex justify-center items-center">
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full  flex justify-center items-center"

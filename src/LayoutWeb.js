@@ -29,9 +29,9 @@ function LayoutWeb() {
   function handleTalk() {
     setTalk((talk) => !talk);
   }
-  function handleMicPress(){
-    userIsSpeaking? stopRecording() : startRecording()
-    setUserIsSpeaking(!userIsSpeaking)
+  function handleMicPress() {
+    userIsSpeaking ? stopRecording() : startRecording();
+    setUserIsSpeaking(!userIsSpeaking);
   }
 
   function getPersonalityPrompt(){
@@ -284,10 +284,7 @@ function LayoutWeb() {
             <div className="userSpeakingBox userSpeakingBox5"></div>
           </div>
             </div>
-            <div
-              className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
-              onClick={notify}
-            >
+            <div className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center">
               <span className="material-symbols-outlined call">
                 phone_disabled
               </span>

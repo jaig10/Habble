@@ -15,8 +15,8 @@ const Chats = ({chats, isTyping, swpDwn}) => {
 
   return (
     <>
-        {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
-        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
+        {/* {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
+        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">  */}
           {chats && chats.length
               ? chats.map((chat, index) => {
                   if (chat.role === "user") {
@@ -65,11 +65,10 @@ const Chats = ({chats, isTyping, swpDwn}) => {
                 </div>
               </div>
               <div ref={messagesEndRef}></div>
-        </div>
-        {/* gray line at the end */}
+        {/* </div>
         <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
         </div>
-        </div>}
+        </div>} */}
     </>
   )
 }
