@@ -40,3 +40,87 @@
     background-color: #bbbaba;
   }
 }
+
+/* body{
+  display: flex;
+  justify-content: center;
+  background: black;
+  margin: 0;padding: 0;
+  align-items: center;
+  height: 100vh;
+} */
+
+.userSpeakingBoxContainer{
+  display: flex;
+  justify-content: space-between;
+  height: 64px;
+  --boxSize: 8px;
+  --gutter: 4px;
+  width: calc((var(--boxSize) + var(--gutter)) * 5);
+}
+
+.userSpeakingBox{
+  transform: scaleY(.4);
+  height: 100%;
+  width: var(--boxSize);
+  background: #12E2DC;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  border-radius: 8px;
+}
+
+.userSpeakingBox1{
+  animation-name: quiet;
+}
+
+.userSpeakingBox2{
+  animation-name: normal;
+}
+
+.userSpeakingBox3{
+  animation-name: quiet;
+}
+
+.userSpeakingBox4{
+  animation-name: loud;
+}
+
+.userSpeakingBox5{
+  animation-name: quiet;
+}
+
+@keyframes quiet {
+  25%{
+    transform: scaleY(.6);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(.8);
+  }
+}
+
+@keyframes normal {
+  25%{
+    transform: scaleY(1);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(.6);
+  }
+}
+@keyframes loud {
+  25%{
+    transform: scaleY(1);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(1.2);
+  }
+}
