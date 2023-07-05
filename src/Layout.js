@@ -6,8 +6,9 @@ import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
+import Chats from "./components/Chats";
 
-const configuration = new Configuration({ 
+const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
 });
 delete configuration.baseOptions.headers["User-Agent"]; //because calling api from frontend
@@ -22,6 +23,7 @@ function Layout() {
   const [swpDwn, setSwpDwn] = useState(true);
   const [talk, setTalk] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
+  const[botPersonality, setBotPersonality] = useState("emma")
 
   function handleSwipe() {
     setSwpDwn((swpDwn) => !swpDwn);
@@ -31,8 +33,25 @@ function Layout() {
   }
 
   function handleMicPress(){
-    userIsSpeaking? stopRecording() : startRecording()
+    if(userIsSpeaking){
+      stopRecording()
+    }
+    else{
+      startRecording()
+    }
     setUserIsSpeaking(!userIsSpeaking)
+  }
+
+  function getPersonalityPrompt(){
+    return(
+      botPersonality==="emma"? `You are Emma, a friendly and knowledgeable girl who is empathetic, approachable, and strives to create a warm and engaging conversation with others. You are also known for her sense of humor, which she uses to lighten the mood when appropriate. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
+      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should not be given for the punctuation and capitalization of letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
+      :
+      botPersonality==="max"? `You are Max, a friendly, humorous and witty boy. You are an entertaining and quick-witted companion, always ready with a clever remark or a funny quip to keep the other person engaged. You love to play with words, puns, and jokes, and your humor is often lighthearted and playful. You are knowledgeable in a wide range of topics, and he often adds a touch of wit and humor to his responses to make the conversation enjoyable. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
+      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should not be given for the punctuation and capitalization of letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
+      :
+      ``
+    )
   }
 
   const { transcript, startRecording, stopRecording } = useWhisper({
@@ -71,22 +90,19 @@ function Layout() {
     setChats(msgs);
 
     setMessage("");
+    let personalityPrompt = getPersonalityPrompt();
 
     await openai
       .createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
           {
-            role: "system",
-            content: `you are languageGPT an assistant to help me improve my english language and conversation skills. You have to act like we are a tinder match and have a conversation with me. Reply should be a proper sentence and make up details about yourself if required.along with reply, include a short feedback of the grammar, vocabulary (ignore punctuations) and what can be improved in my previous message. use only the following json format and do not return any text outside the json object. format: {"reply": "CHAT_REPLY", "feedback": "FEEDBACK"} Your response should not contain any text outside of the curly braces as used in format`,
-          },
-          {
             role: "user",
-            content: "Hi! What is your name",
+            content: personalityPrompt,
           },
           {
             role: "assistant",
-            content: `{"reply":"My name is Habble, and I'm excited to get to know you! What brings you to Tinder?", "feedback":"Good grammar and vocabulary. Keep it up!"}`,
+            content: `{"reply": "Hi there! How are you today?", "feedback": ""}`,
           },
           ...chats,
         ],
@@ -96,9 +112,8 @@ function Layout() {
         setChats(msgs);
         window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
-        // speak({text: assistantMessage.reply})//text to speech
-        // console.log(assistantMessage.reply);
-        BotAudio(assistantMessage.reply);
+        speak({text: assistantMessage.reply})//text to speech
+        // BotAudio(assistantMessage.reply);
         setIsTyping(false);
         // speech.text = assistantMessage.reply;
         // window.speechSynthesis.speak(speech);
@@ -119,6 +134,16 @@ function Layout() {
     <div className="h-screen bg-grey">
       {swpDwn && (
         <div className="voice bg-grey flex flex-col justify-center items-center">
+          {/* select personality */}
+          <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm pb-4"} role="group">
+            <button onClick={()=>setBotPersonality("emma")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            Emma (kind, helpful)
+            </button>
+            <button onClick={()=>setBotPersonality("max")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            Max (witty, funny)
+            </button>
+          </div>
+
           <div className="user-sz flex justify-center items-center mb-10">
             <img
               className="rounded-full border border-gray-100 shadow-sm"
@@ -173,61 +198,10 @@ function Layout() {
           </div>
         </div>
       )}
-      {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
-        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
-          {chats && chats.length
-              ? chats.map((chat, index) => {
-                  if (chat.role === "user") {
-                    return (
-                      <div
-                        key={index}
-                        className="userMsg rounded-md bg-darkpurple max-w-[60%] ml-auto"
-                      >
-                        <p className="text-white p-2">
-                          {chat.content}
-                        </p>
-                      </div>
-                    );
-                  } else if(chat.role === "assistant") {
-                    // console.log(JSON.parse(chat.content))
-                    let AssistantMsg = JSON.parse(chat.content);
-                    return (
-                     <div key={index} className="flex-col flex gap-2">
-                        <div
-                          className="botMsg rounded-md bg-lightergrey max-w-[65%] mr-auto"
-                        >
-                          <p className="text-black font-medium p-2">
-                            {AssistantMsg.reply}
-                          </p>
-                        </div>
-                        
-                        <div
-                          className="botMsg rounded-md bg-lightpink max-w-[65%] mr-auto"
-                        >
-                          <p className="text-indigoish italic p-2">
-                            {AssistantMsg.feedback}
-                          </p>
-                        </div>
-                     </div>
-                      
-                    );
-                  }
-                }
-                )
-              : ""}
-              <div className={isTyping? "rounded-xl bg-lightergrey mr-auto" : "hidden"}>
-                <div className="typing-animation px-3 py-4">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
-              </div>
-        </div>
-        {/* gray line at the end */}
-        <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
-        </div>
-        </div>}
-      <div className="controls absolute bottom-0 w-full bg-grey flex justify-center items-center">
+
+      <Chats chats={chats} isTyping={isTyping} swpDwn={swpDwn}/>
+
+      <div className="controls absolute bottom-0 w-full h-[33%] bg-grey flex justify-center items-center">
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full  flex justify-center items-center"
           onClick={handleSwipe}
@@ -251,9 +225,16 @@ function Layout() {
           className="w-22 h-22 mx-2 bg-lightgrey rounded-full p-4 flex justify-center items-center"
           onClick={handleMicPress}
         >
-          <span className="material-symbols-outlined icon-sz decoration-blue">
+          <span className={userIsSpeaking? "hidden" : "material-symbols-outlined icon-sz decoration-blue"}>
             mic
           </span>
+          <div className={userIsSpeaking? "userSpeakingBoxContainer" : "hidden"}>
+            <div className="userSpeakingBox userSpeakingBox1"></div>
+            <div className="userSpeakingBox userSpeakingBox2"></div>
+            <div className="userSpeakingBox userSpeakingBox3"></div>
+            <div className="userSpeakingBox userSpeakingBox4"></div>
+            <div className="userSpeakingBox userSpeakingBox5"></div>
+          </div>
         </div>
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
