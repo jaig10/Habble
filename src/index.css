@@ -1,7 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+:root{
+  --toastify-toast-width: 500px;
+  --toastify-color-light: #FFF1F1C7!important;
+  --toastify-text-color-light: #5F68B6!important;
+  --toastify-color-progress-light: #5F68B6!important;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
