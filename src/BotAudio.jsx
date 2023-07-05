@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const axios = require('axios');
+// const axios = require('axios');
 
 // function BotAudio(message){
 //   function getVoices() {
@@ -24,15 +24,16 @@ const axios = require('axios');
 //   speechSynthesis.speak(speakData);
 
 // }
-function BotAudio(message){
+function BotAudio(message, handleTalk){
+  // let audio = null;
   const url = "https://play.ht/api/v1/convert";
   const options = {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
-      AUTHORIZATION: "261d92a2655a46e190d864e0dad6bc7f",
-      "X-USER-ID": "B1twdX7ECCRNhyMSNtU5ESiwPrn2",
+      AUTHORIZATION: "28d182549f074d6d97e5d2512991b8d0",
+      "X-USER-ID": "LJKmJiGQk7Tvg7xpQI01uLsiHZ02",
     },
     body: JSON.stringify({ content: [message], voice: "en-US-JennyNeural" }),
   };
@@ -56,8 +57,8 @@ function BotAudio(message){
       method: 'GET',
       headers: {
         accept: 'application/json',
-        AUTHORIZATION: '261d92a2655a46e190d864e0dad6bc7f',
-        'X-USER-ID': 'B1twdX7ECCRNhyMSNtU5ESiwPrn2'
+        AUTHORIZATION: "28d182549f074d6d97e5d2512991b8d0",
+        "X-USER-ID": "LJKmJiGQk7Tvg7xpQI01uLsiHZ02",
       }
     };
   
@@ -72,6 +73,8 @@ function BotAudio(message){
   
         if (data1.converted) {
           var audio = new Audio(data1.audioUrl);
+          handleTalk();
+          audio.addEventListener('ended', ()=>{handleTalk()});
           audio.play();
           console.log("Transcription completed:", data1);
           break;
@@ -91,7 +94,7 @@ function BotAudio(message){
       throw error1;
     }
   };
-  
+
   // Usage
   (async () => {
     try {

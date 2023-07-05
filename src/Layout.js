@@ -6,6 +6,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
+import { toast } from "react-toastify";
 
 const configuration = new Configuration({ 
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
@@ -96,9 +97,10 @@ function Layout() {
         setChats(msgs);
         window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
+        notify();
         // speak({text: assistantMessage.reply})//text to speech
         // console.log(assistantMessage.reply);
-        BotAudio(assistantMessage.reply);
+        BotAudio(assistantMessage.reply, handleTalk);
         setIsTyping(false);
         // speech.text = assistantMessage.reply;
         // window.speechSynthesis.speak(speech);
@@ -114,6 +116,41 @@ function Layout() {
     console.log(transcript.text)
     chat(transcript.text)
   }, [transcript.text]);
+
+
+  const notify = () => {
+    let latestAssistantChat = null;
+
+    for (let i = chats.length - 1; i >= 0; i--) {
+      const chat = chats[i];
+      if (chat.role === "assistant") {
+        latestAssistantChat = chat;
+        break;
+      }
+    }
+
+    if (latestAssistantChat !== null) {
+      let AssistantMsg = JSON.parse(latestAssistantChat.content);
+      let feedback = AssistantMsg.feedback;
+      toast(feedback, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+    } else {
+      console.log("No assistant chat found in the array.");
+    }
+
+    // 
+    // alert(AssistantMsg);
+    // console.log(AssistantMsg);
+    // 
+  };
 
   return (
     <div className="h-screen bg-grey">
@@ -257,7 +294,7 @@ function Layout() {
         </div>
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
-          onClick={handleSwipe}
+          onClick={notify}
         >
           <span className="material-symbols-outlined call">phone_disabled</span>
         </div>

@@ -6,6 +6,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
+import { toast } from "react-toastify";
 
 const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
@@ -27,9 +28,9 @@ function LayoutWeb() {
   function handleTalk() {
     setTalk((talk) => !talk);
   }
-  function handleMicPress(){
-    userIsSpeaking? stopRecording() : startRecording()
-    setUserIsSpeaking(!userIsSpeaking)
+  function handleMicPress() {
+    userIsSpeaking ? stopRecording() : startRecording();
+    setUserIsSpeaking(!userIsSpeaking);
   }
 
   const { transcript, startRecording, stopRecording } = useWhisper({
@@ -56,7 +57,7 @@ function LayoutWeb() {
     // voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
   };
 
-  const chat = async ( message) => {
+  const chat = async (message) => {
     // e.preventDefault();
 
     if (!message) return;
@@ -93,9 +94,10 @@ function LayoutWeb() {
         setChats(msgs);
         window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
+        notify();
         // speak({text: assistantMessage.reply})//text to speech
         // console.log(assistantMessage.reply);
-        BotAudio(assistantMessage.reply);
+        BotAudio(assistantMessage.reply, handleTalk);
         setIsTyping(false);
         // speech.text = assistantMessage.reply;
         // window.speechSynthesis.speak(speech);
@@ -105,13 +107,45 @@ function LayoutWeb() {
       });
   };
 
-  
   useEffect(() => {
     setMessage(transcript.text);
-    console.log(transcript.text)
-    chat(transcript.text)
+    console.log(transcript.text);
+    chat(transcript.text);
   }, [transcript.text]);
 
+  const notify = () => {
+    let latestAssistantChat = null;
+
+    for (let i = chats.length - 1; i >= 0; i--) {
+      const chat = chats[i];
+      if (chat.role === "assistant") {
+        latestAssistantChat = chat;
+        break;
+      }
+    }
+
+    if (latestAssistantChat !== null) {
+      let AssistantMsg = JSON.parse(latestAssistantChat.content);
+      let feedback = AssistantMsg.feedback;
+    toast(feedback, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+    } else {
+      console.log("No assistant chat found in the array.");
+    }
+
+    // 
+    // alert(AssistantMsg);
+    // console.log(AssistantMsg);
+    // 
+  };
 
   return (
     <div className="cover bg-creme h-screen flex justify-center items-center">
@@ -147,41 +181,43 @@ function LayoutWeb() {
               className="rounded-full border border-gray-100 shadow-sm"
               src={botLogo}
               alt="bot image"
-            ></img> 
-            {talk && (<svg
-              className="absolute"
-              width="170"
-              height="170"
-              viewBox="0 0 236 236"
-              preserveAspectRatio="xMidYMin"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g id="Group 551">
-                <g id="Group 30">
-                  <circle
-                    id="Ellipse 4"
-                    cx="118.5"
-                    cy="118.5"
-                    r="106"
-                    stroke="#BCBCBC"
-                    strokeOpacity="0.8"
-                    strokeWidth="5"
-                  />
+            ></img>
+            {talk && (
+              <svg
+                className="absolute"
+                width="170"
+                height="170"
+                viewBox="0 0 236 236"
+                preserveAspectRatio="xMidYMin"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="Group 551">
+                  <g id="Group 30">
+                    <circle
+                      id="Ellipse 4"
+                      cx="118.5"
+                      cy="118.5"
+                      r="106"
+                      stroke="#BCBCBC"
+                      strokeOpacity="0.8"
+                      strokeWidth="5"
+                    />
+                  </g>
+                  <g id="Group 549">
+                    <circle
+                      id="Ellipse 4_2"
+                      cx="118"
+                      cy="118"
+                      r="115.5"
+                      stroke="#868686"
+                      strokeOpacity="0.8"
+                      strokeWidth="5"
+                    />
+                  </g>
                 </g>
-                <g id="Group 549">
-                  <circle
-                    id="Ellipse 4_2"
-                    cx="118"
-                    cy="118"
-                    r="115.5"
-                    stroke="#868686"
-                    strokeOpacity="0.8"
-                    strokeWidth="5"
-                  />
-                </g>
-              </g>
-            </svg>)}
+              </svg>
+            )}
           </div>
           <div className="image flex justify-center">
             <img
@@ -221,7 +257,10 @@ function LayoutWeb() {
                 mic
               </span>
             </div>
-            <div className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center">
+            <div
+              className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
+              onClick={notify}
+            >
               <span className="material-symbols-outlined call">
                 phone_disabled
               </span>
@@ -231,60 +270,55 @@ function LayoutWeb() {
         <div
           className={`chats ${chatVisible} bg-white  absolute top-0 right-0`}
         >
-        <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
-        <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
-          {chats && chats.length
-              ? chats.map((chat, index) => {
-                  if (chat.role === "user") {
-                    return (
-                      <div
-                        key={index}
-                        className="userMsg rounded-md bg-darkpurple max-w-[60%] ml-auto"
-                      >
-                        <p className="text-white p-2">
-                          {chat.content}
-                        </p>
-                      </div>
-                    );
-                  } else if(chat.role === "assistant") {
-                    // console.log(JSON.parse(chat.content))
-                    let AssistantMsg = JSON.parse(chat.content);
-                    return (
-                     <div key={index} className="flex-col flex gap-2">
+          <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
+            <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">
+              {chats && chats.length
+                ? chats.map((chat, index) => {
+                    if (chat.role === "user") {
+                      return (
                         <div
-                          className="botMsg rounded-md bg-lightergrey max-w-[65%] mr-auto"
+                          key={index}
+                          className="userMsg rounded-md bg-darkpurple max-w-[60%] ml-auto"
                         >
-                          <p className="text-black font-medium p-2">
-                            {AssistantMsg.reply}
-                          </p>
+                          <p className="text-white p-2">{chat.content}</p>
                         </div>
-                        
-                        <div
-                          className="botMsg rounded-md bg-lightpink max-w-[65%] mr-auto"
-                        >
-                          <p className="text-indigoish italic p-2">
-                            {AssistantMsg.feedback}
-                          </p>
+                      );
+                    } else if (chat.role === "assistant") {
+                      // console.log(JSON.parse(chat.content))
+                      let AssistantMsg = JSON.parse(chat.content);
+                      return (
+                        <div key={index} className="flex-col flex gap-2">
+                          <div className="botMsg rounded-md bg-lightergrey max-w-[65%] mr-auto">
+                            <p className="text-black font-medium p-2">
+                              {AssistantMsg.reply}
+                            </p>
+                          </div>
+
+                          <div className="botMsg rounded-md bg-lightpink max-w-[65%] mr-auto">
+                            <p className="text-indigoish italic p-2">
+                              {AssistantMsg.feedback}
+                            </p>
+                          </div>
                         </div>
-                     </div>
-                      
-                    );
-                  }
+                      );
+                    }
+                  })
+                : ""}
+              <div
+                className={
+                  isTyping ? "rounded-xl bg-lightergrey mr-auto" : "hidden"
                 }
-                )
-              : ""}
-              <div className={isTyping? "rounded-xl bg-lightergrey mr-auto" : "hidden"}>
+              >
                 <div className="typing-animation px-3 py-4">
                   <div className="dot"></div>
                   <div className="dot"></div>
                   <div className="dot"></div>
                 </div>
               </div>
-        </div>
-        {/* gray line at the end */}
-        <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
-        </div>
-        </div>
+            </div>
+            {/* gray line at the end */}
+            <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1"></div>
+          </div>
         </div>
       </div>
     </div>
