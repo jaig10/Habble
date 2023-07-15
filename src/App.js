@@ -14,13 +14,19 @@ export const App = () => {
   React.useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));
   }, []);
-
+  const getToastStyle = () => {
+    if (width < breakpoint) {
+      return { width: "100%" };
+    } else {
+      return { width: "50%" };
+    }
+  };
   return (
     <>
       <ToastContainer
         position="top-center"
         autoClose={5000}
-        hideProgressBar={false}
+        hideProgressBar
         newestOnTop={false}
         closeOnClick
         rtl={false}
@@ -28,18 +34,15 @@ export const App = () => {
         draggable
         pauseOnHover
         theme="light"
-        // style={{ width:'50%'}}
+        style={getToastStyle()}
       />
       <Router>
         <Routes>
           <Route path="/chat" element={<Chatbot />} />
-          {/* <Route path='/' element={<LayoutWeb/>} /> */}
-          {/* <Route path='/' element={<Layout/>} /> */}
           <Route
             path="/"
             element={width < breakpoint ? <Layout /> : <LayoutWeb />}
           />
-          {/* <Route path='/testing' element={<Home/>} /> */}
         </Routes>
       </Router>
     </>

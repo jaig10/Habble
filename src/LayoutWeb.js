@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./LayoutWeb.css";
-import logo from "./Utils/nouser1.png";
+import logo from "./Utils/user-default.png";
 import botLogo from "./Utils/user1.png";
 import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
 import { toast } from "react-toastify";
+import Chats from "./components/Chats";
 
 const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
@@ -18,6 +19,7 @@ console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
 function LayoutWeb() {
   const [chatVisible, setChatVisible] = useState(false);
   const [talk, setTalk] = useState(false);
+  const [spin, setSpin] = useState(false);
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
@@ -76,12 +78,11 @@ function LayoutWeb() {
     if (!message) return;
     setIsTyping(true);
     window.scrollTo(0, 1e10);
-    // console.log(chats)
     let msgs = chats;
     msgs.push({ role: "user", content: message });
     setChats(msgs);
-
     setMessage("");
+    setSpin(true);
     let personalityPrompt = getPersonalityPrompt();
 
     await openai
@@ -104,12 +105,20 @@ function LayoutWeb() {
         setChats(msgs);
         window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
+        speech.text = assistantMessage.reply;
+        speechSynthesis.speak(speech);
+        speech.onstart = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
+        speech.onend = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
         notify();
-        speak({text: assistantMessage.reply})//text to speech
         // BotAudio(assistantMessage.reply, handleTalk);
+        setSpin(false);
         setIsTyping(false);
-        // speech.text = assistantMessage.reply;
-        // window.speechSynthesis.speak(speech);
       })
       .catch((error) => {
         console.log(error);
@@ -134,13 +143,12 @@ function LayoutWeb() {
       }
     }
 
-    if (latestAssistantChat !== null) {
+    if (latestAssistantChat !== null && !chatVisible) {
       let AssistantMsg = JSON.parse(latestAssistantChat.content);
       let feedback = AssistantMsg.feedback;
     toast(feedback, {
       position: "top-center",
       autoClose: 5000,
-      hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -184,24 +192,28 @@ function LayoutWeb() {
       </svg>
       <div className="main relative w-1/2 ">
       {/* select personality */}
-      <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm"} role="group">
+      {/* <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm"} role="group">
         <button onClick={()=>setBotPersonality("emma")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
         Emma (kind, helpful)
         </button>
         <button onClick={()=>setBotPersonality("max")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
         Max (witty, funny)
         </button>
-      </div>
+      </div> */}
 
         <div
           className={`voices ${chatVisible} bg-grey flex flex-col justify-center items-center pt-8`}
         >
           <div className="image flex justify-center items-center mb-4">
             <img
-              className="rounded-full border border-gray-100 shadow-sm"
+              className="rounded-full"
               src={botLogo}
               alt="bot image"
             ></img>
+            {spin && <span class="loader"></span>}
+            {/* <svg width="196" height="196" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle id="Ellipse 51" cx="98" cy="98" r="98" fill="#6A6A6A" fill-opacity="0.64"/>
+</svg> */}
             {talk && (
               <svg
                 className="absolute"
@@ -241,7 +253,7 @@ function LayoutWeb() {
           </div>
           <div className="image flex justify-center">
             <img
-              className="rounded-full border border-gray-100 shadow-sm user "
+              className="rounded-full user "
               src={logo}
               // habble-chatbot-main\Utils\nouser.jpg
               alt="user image"
@@ -296,52 +308,9 @@ function LayoutWeb() {
         >
           <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
             <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">
-              {chats && chats.length
-                ? chats.map((chat, index) => {
-                    if (chat.role === "user") {
-                      return (
-                        <div
-                          key={index}
-                          className="userMsg rounded-md bg-darkpurple max-w-[60%] ml-auto"
-                        >
-                          <p className="text-white p-2">{chat.content}</p>
-                        </div>
-                      );
-                    } else if (chat.role === "assistant") {
-                      // console.log(JSON.parse(chat.content))
-                      let AssistantMsg = JSON.parse(chat.content);
-                      return (
-                        <div key={index} className="flex-col flex gap-2">
-                          <div className="botMsg rounded-md bg-lightergrey max-w-[65%] mr-auto">
-                            <p className="text-black font-medium p-2">
-                              {AssistantMsg.reply}
-                            </p>
-                          </div>
-
-                          <div className="botMsg rounded-md bg-lightpink max-w-[65%] mr-auto">
-                            <p className="text-indigoish italic p-2">
-                              {AssistantMsg.feedback}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    }
-                  })
-                : ""}
-              <div
-                className={
-                  isTyping ? "rounded-xl bg-lightergrey mr-auto" : "hidden"
-                }
-              >
-                <div className="typing-animation px-3 py-4">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
-              </div>
+              <Chats chats={chats} isTyping={isTyping}/>
             </div>
-            {/* gray line at the end */}
-            <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1"></div>
+            
           </div>
         </div>
       </div>

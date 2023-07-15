@@ -23,6 +23,7 @@ function Layout() {
   const [isTyping, setIsTyping] = useState(false);
   const [swpDwn, setSwpDwn] = useState(true);
   const [talk, setTalk] = useState(false);
+  const [spin, setSpin] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
   const[botPersonality, setBotPersonality] = useState("emma")
 
@@ -89,8 +90,8 @@ function Layout() {
     let msgs = chats;
     msgs.push({ role: "user", content: message });
     setChats(msgs);
-
     setMessage("");
+    setSpin(true);
     let personalityPrompt = getPersonalityPrompt();
 
     await openai
@@ -113,12 +114,21 @@ function Layout() {
         setChats(msgs);
         window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
+        // speak({text: assistantMessage.reply})
+        speech.text = assistantMessage.reply;
+        speechSynthesis.speak(speech);
+        speech.onstart = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
+        speech.onend = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
         notify();
-        speak({text: assistantMessage.reply})//text to speech
         // BotAudio(assistantMessage.reply, handleTalk);
+        setSpin(false);
         setIsTyping(false);
-        // speech.text = assistantMessage.reply;
-        // window.speechSynthesis.speak(speech);
       })
       .catch((error) => {
         console.log(error);
@@ -144,13 +154,12 @@ function Layout() {
       }
     }
 
-    if (latestAssistantChat !== null) {
+    if (latestAssistantChat !== null && swpDwn) {
       let AssistantMsg = JSON.parse(latestAssistantChat.content);
       let feedback = AssistantMsg.feedback;
       toast(feedback, {
       position: "top-center",
       autoClose: 5000,
-      hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -172,21 +181,22 @@ function Layout() {
       {swpDwn && (
         <div className="voice bg-grey flex flex-col justify-center items-center">
           {/* select personality */}
-          <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm pb-4"} role="group">
+          {/* <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm pb-4"} role="group">
             <button onClick={()=>setBotPersonality("emma")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             Emma (kind, helpful)
             </button>
             <button onClick={()=>setBotPersonality("max")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             Max (witty, funny)
             </button>
-          </div>
+          </div> */}
 
           <div className="user-sz flex justify-center items-center mb-10">
             <img
-              className="rounded-full border border-gray-100 shadow-sm"
+              className="rounded-full"
               src={botLogo}
               alt="bot image"
             ></img>
+            {spin && <span class="loader"></span>}
             {talk && (
               <svg
                 className="absolute"
@@ -226,9 +236,8 @@ function Layout() {
           </div>
           <div className="user-sz flex justify-center items-center">
             <img
-              className="rounded-full border border-gray-100 shadow-sm"
+              className="rounded-full"
               src={logo}
-              // habble-chatbot-main\Utils\nouser.jpg
               alt="user image"
               onClick={handleTalk}
             ></img>
@@ -236,7 +245,7 @@ function Layout() {
         </div>
       )}
 
-      {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[67%] rounded-b-3xl">
+      {!swpDwn && <div className="swipe-down-container flex flex-col bg-white h-[75%] rounded-b-3xl">
         <div className="chat m-4 flex-col flex gap-5 overflow-y-auto"> 
           <Chats chats={chats} isTyping={isTyping} swpDwn={swpDwn}/>
         </div>
@@ -244,7 +253,7 @@ function Layout() {
         <div className="bg-gray-400 w-1/3 text-center mx-auto mt-auto mb-2 h-1">
         </div>
         </div>}
-      <div className="controls absolute bottom-0 w-full h-[33%] bg-grey flex justify-center items-center">
+      <div className="controls w-full h-[25%] bg-grey flex justify-center items-center">
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full  flex justify-center items-center"
           onClick={handleSwipe}

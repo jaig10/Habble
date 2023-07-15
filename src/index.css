@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 :root{
-  --toastify-toast-width: 500px;
+  /* --toastify-toast-width: 50%!important; */
   --toastify-color-light: #FFF1F1C7!important;
   --toastify-text-color-light: #5F68B6!important;
   --toastify-color-progress-light: #5F68B6!important;
@@ -19,4 +19,14 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* toast css */
+
+.toast-container {
+  width: 100%;
+}
+
+.toast-container-web {
+  width: 50%;
 }
