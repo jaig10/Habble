@@ -10,12 +10,12 @@ const ChooseAvatar = () => {
   const avatars = [
     {
       name: "Alex",
-      image: "/alex.png",
+      image: "/Alex.png",
       description: ["Funny", "Lively", "Casual", "Encouraging"]
     },
     {
       name: "Emma",
-      image: "/emma.png",
+      image: "/Emma.png",
       description: ["Friendly", "Helpful", "Empathetic"]
     }
     // {
