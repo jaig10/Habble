@@ -35,7 +35,7 @@ const ChooseAvatar = () => {
     <>
       <div className='m-6'>
         <div>
-          <img src="/habble_logo_green.jpg" alt="Habble" className='h-20'/>
+          <img src="/habble_logo_green.JPG" alt="Habble" className='h-20'/>
         </div>
         <div className='text-center my-12'>
           <h3 className='text-3xl font-jua'>Choose your Habble buddy!</h3>
