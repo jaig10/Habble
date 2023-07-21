@@ -12,10 +12,13 @@ module.exports = {
         darkpurple: "#933FFF",
         lightpink: "#FFF1F1B2",
         indigoish: "#5F68B6",
-        pink:"#FFEBEA"
+        pink:"#FFEBEA",
+        peach: "#FFEBEA"
       },
       fontFamily: {
-        'roboto': ['Roboto', 'sans-serif']
+        'roboto': ['Roboto', 'sans-serif'],
+        'jua': ['Jua', 'Roboto', 'sans-serif'],
+        'helvetica': ['Helvetica', 'sans-serif']
       }
     },
   },

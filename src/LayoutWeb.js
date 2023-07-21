@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./LayoutWeb.css";
-import logo from "./Utils/user-default.png";
-import botLogo from "./Utils/user1.png";
 import { Configuration, OpenAIApi } from "openai";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useSpeechSynthesis } from "react-speech-kit";
 import BotAudio from "./BotAudio";
 import { toast } from "react-toastify";
 import Chats from "./components/Chats";
+import { useLocation, useNavigate } from "react-router";
 
 const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPENAI_API_TOKEN, //OPEN_AI_TOKEN
@@ -16,15 +15,53 @@ delete configuration.baseOptions.headers["User-Agent"]; //because calling api fr
 const openai = new OpenAIApi(configuration);
 console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
 
+
+var ELEVEN_LABS_API_KEY = "270a3be10b0697dc648324751c153a0b"; //API Key
+
 function LayoutWeb() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [chatVisible, setChatVisible] = useState(false);
   const [talk, setTalk] = useState(false);
   const [spin, setSpin] = useState(false);
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
+  const [hungup, setHungup] = useState(false);
+  const botPersonality = location.state?.botPersonality? location.state.botPersonality : "Alex"
   const [message, setMessage] = useState("");
-  const[botPersonality, setBotPersonality] = useState("emma")
+
+
+  const sVoiceId = botPersonality==="Alex"? "TxGEqnHWrfWFTfGW9XjX" : "EXAVITQu4vr4xnSDxMaL"; //"21m00Tcm4TlvDq8ikWAM" Rachel EXAVITQu4vr4xnSDxMaL bella TxGEqnHWrfWFTfGW9XjX josh
+
+function ElevenLabsTextToSpeech(s) {
+
+  var oHttp = new XMLHttpRequest();
+  oHttp.open("POST", "https://api.elevenlabs.io/v1/text-to-speech/" + sVoiceId);
+  oHttp.setRequestHeader("Accept", "audio/mpeg");
+  oHttp.setRequestHeader("Content-Type", "application/json");
+  oHttp.setRequestHeader("xi-api-key", ELEVEN_LABS_API_KEY)
+
+  oHttp.onload = function () {
+      if (oHttp.readyState === 4) {
+
+          var oBlob = new Blob([this.response], { "type": "audio/mpeg" });
+          var audioURL = window.URL.createObjectURL(oBlob);
+          var audio = new Audio();
+          audio.src = audioURL;
+          audio.play();
+      }
+  };
+
+  var data = {
+      text: s,
+      voice_settings: { stability: 0, similarity_boost: 0 }
+  };
+
+  oHttp.responseType = "arraybuffer";
+  oHttp.send(JSON.stringify(data));
+}
+
   function handleVisibility() {
     setChatVisible((chatVisible) => !chatVisible);
   }
@@ -38,11 +75,11 @@ function LayoutWeb() {
 
   function getPersonalityPrompt(){
     return(
-      botPersonality==="emma"? `You are Emma, a friendly and knowledgeable girl who is empathetic, approachable, and strives to create a warm and engaging conversation with others. You are also known for her sense of humor, which she uses to lighten the mood when appropriate. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
-      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should not be given for the punctuation and capitalization of letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
+      botPersonality==="Emma"? `You are Emma, a friendly and knowledgeable girl who is empathetic, approachable, and strives to create a warm and engaging conversation with others. You are also known for her sense of humor, which she uses to lighten the mood when appropriate. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
+      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should never be given for the punctuation and capitalization of letters. Never ask the user to capitalize the letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
       :
-      botPersonality==="max"? `You are Max, a friendly, humorous and witty boy. You are an entertaining and quick-witted companion, always ready with a clever remark or a funny quip to keep the other person engaged. You love to play with words, puns, and jokes, and your humor is often lighthearted and playful. You are knowledgeable in a wide range of topics, and he often adds a touch of wit and humor to his responses to make the conversation enjoyable. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
-      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should not be given for the punctuation and capitalization of letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
+      botPersonality==="Alex"? `You are Alex, a friendly, humorous and witty boy. You are an entertaining and quick-witted companion, always ready with a clever remark or a funny quip to keep the other person engaged. You love to play with words, puns, and jokes, and your humor is often lighthearted and playful. You are knowledgeable in a wide range of topics, and he often adds a touch of wit and humor to his responses to make the conversation enjoyable. Your goal is to build a strong rapport with users and be their trusted companion. You like to make conversations interesting and help the other person navigate through new topics for conversation whenever they seem to be running out of things to talk about. When asked about personal details, you make up details about yourself to keep the conversation going. You ask open ended questions and encourage the other person to express their thoughts openly.
+      For every message that the user sends, you have to respond with a json object containing reply from emma and the feedback for user's english language usage in the previous message. The Feedback is supposed to improve the user's grammar, vocabulary and communication skills. Feedback should never be given for the punctuation and capitalization of letters. Never ask the user to capitalize the letters. Feedback should only be given for user's message and not for emma's message. For your response, use only the following json format and do not return any text outside the json object. format: {"reply": "REPLY_BY_EMMA", "feedback": "FEEDBACK_FOR_USER_MESSAGE"} Your response should not contain any text outside of the curly braces as used in format.`
       :
       ``
     )
@@ -95,7 +132,7 @@ function LayoutWeb() {
           },
           {
             role: "assistant",
-            content: `{"reply": "Hi there! How are you today?", "feedback": ""}`,
+            content: `{"reply": "Hi there! How are you today?", "feedback": "Your English was perfect. Keep it up!"}`,
           },
           ...chats,
         ],
@@ -103,18 +140,19 @@ function LayoutWeb() {
       .then((res) => {
         msgs.push(res.data.choices[0].message);
         setChats(msgs);
-        window.scrollTo(0, 1e10);
+        // window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
         speech.text = assistantMessage.reply;
-        speechSynthesis.speak(speech);
-        speech.onstart = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
-        speech.onend = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
+        ElevenLabsTextToSpeech(speech.text)
+        // speechSynthesis.speak(speech);
+        // speech.onstart = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
+        // speech.onend = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
         notify();
         // BotAudio(assistantMessage.reply, handleTalk);
         setSpin(false);
@@ -148,7 +186,7 @@ function LayoutWeb() {
       let feedback = AssistantMsg.feedback;
     toast(feedback, {
       position: "top-center",
-      autoClose: 5000,
+      autoClose: 6000,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
@@ -202,13 +240,13 @@ function LayoutWeb() {
       </div> */}
 
         <div
-          className={`voices ${chatVisible} bg-grey flex flex-col justify-center items-center pt-8`}
+          className={`voices ${chatVisible} bg-grey flex flex-col justify-center items-center pt-8 rounded-lg`}
         >
           <div className="image flex justify-center items-center mb-4">
             <img
               className="rounded-full"
-              src={botLogo}
-              alt="bot image"
+              src={`/${botPersonality}.png`}
+              alt={botPersonality}
             ></img>
             {spin && <span class="loader"></span>}
             {/* <svg width="196" height="196" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -254,10 +292,8 @@ function LayoutWeb() {
           <div className="image flex justify-center">
             <img
               className="rounded-full user "
-              src={logo}
-              // habble-chatbot-main\Utils\nouser.jpg
+              src="/user-default.png"
               alt="user image"
-              onClick={handleTalk}
             ></img>
           </div>
 
@@ -272,7 +308,7 @@ function LayoutWeb() {
                 height="28"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke={`${chatVisible?"#00E0FF":"currentColor"}`}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -296,7 +332,7 @@ function LayoutWeb() {
             <div className="userSpeakingBox userSpeakingBox5"></div>
           </div>
             </div>
-            <div className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center">
+            <div className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center cursor-pointer" onClick={()=>{setHungup(true)}}>
               <span className="material-symbols-outlined call">
                 phone_disabled
               </span>
@@ -304,13 +340,13 @@ function LayoutWeb() {
           </div>
         </div>
         <div
-          className={`chats ${chatVisible} bg-white  absolute top-0 right-0`}
+          className={`${hungup?"hangup":""} chats ${chatVisible} bg-white  absolute top-0 right-0 `}
         >
           <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
             <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">
               <Chats chats={chats} isTyping={isTyping}/>
             </div>
-            
+            <span className={`flex justify-end mx-4 cursor-pointer ${hungup?"":"hidden"}`} onClick={()=>{navigate('/avatar')}}>X</span> 
           </div>
         </div>
       </div>
