@@ -148,16 +148,16 @@ function ElevenLabsTextToSpeech(s) {
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
         // speak({text: assistantMessage.reply})
         speech.text = assistantMessage.reply;
-        // speechSynthesis.speak(speech);
-        ElevenLabsTextToSpeech(speech.text)
-        // speech.onstart = () =>{
-        //   handleTalk();
-        //   console.log("inside speech");
-        // }
-        // speech.onend = () =>{
-        //   handleTalk();
-        //   console.log("inside speech");
-        // }
+        // ElevenLabsTextToSpeech(speech.text)
+        speechSynthesis.speak(speech);
+        speech.onstart = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
+        speech.onend = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
         notify();
         // BotAudio(assistantMessage.reply, handleTalk);
         setSpin(false);
