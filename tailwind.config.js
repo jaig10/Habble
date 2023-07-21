@@ -11,7 +11,8 @@ module.exports = {
         lightergrey: "rgba(206, 206, 206, 0.7)",
         darkpurple: "#933FFF",
         lightpink: "#FFF1F1B2",
-        indigoish: "#5F68B6"
+        indigoish: "#5F68B6",
+        pink:"#FFEBEA"
       },
       fontFamily: {
         'roboto': ['Roboto', 'sans-serif']

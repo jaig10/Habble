@@ -5,8 +5,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import Chatbot from "./Chatbot";
 import Layout from "./Layout";
 import LayoutWeb from "./LayoutWeb";
+import Welcome from "./pages/Welcome";
 import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
+import Language from "./pages/Language";
 
 export const App = () => {
   const [width, setWidth] = React.useState(window.innerWidth);
@@ -38,9 +40,11 @@ export const App = () => {
       />
       <Router>
         <Routes>
-          <Route path="/chat" element={<Chatbot />} />
+          {/* <Route path="/chat" element={<Chatbot />} /> */}
+          <Route path="/language" element={<Language />} />
+          <Route path="/" element={<Welcome />} />
           <Route
-            path="/"
+            path="/chat"
             element={width < breakpoint ? <Layout /> : <LayoutWeb />}
           />
         </Routes>
