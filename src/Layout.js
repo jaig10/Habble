@@ -15,6 +15,7 @@ delete configuration.baseOptions.headers["User-Agent"]; //because calling api fr
 const openai = new OpenAIApi(configuration);
 console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
 
+var ELEVEN_LABS_API_KEY = "270a3be10b0697dc648324751c153a0b"; //API Key
 
 function Layout() {
   const navigate = useNavigate()
@@ -27,6 +28,36 @@ function Layout() {
   const [spin, setSpin] = useState(false);
   const [userIsSpeaking, setUserIsSpeaking] = useState(false);
   const botPersonality = location.state?.botPersonality? location.state.botPersonality : "Alex"
+
+  const sVoiceId = botPersonality==="Alex"? "TxGEqnHWrfWFTfGW9XjX" : "EXAVITQu4vr4xnSDxMaL"; //"21m00Tcm4TlvDq8ikWAM" Rachel EXAVITQu4vr4xnSDxMaL bella TxGEqnHWrfWFTfGW9XjX josh
+
+function ElevenLabsTextToSpeech(s) {
+
+  var oHttp = new XMLHttpRequest();
+  oHttp.open("POST", "https://api.elevenlabs.io/v1/text-to-speech/" + sVoiceId);
+  oHttp.setRequestHeader("Accept", "audio/mpeg");
+  oHttp.setRequestHeader("Content-Type", "application/json");
+  oHttp.setRequestHeader("xi-api-key", ELEVEN_LABS_API_KEY)
+
+  oHttp.onload = function () {
+      if (oHttp.readyState === 4) {
+
+          var oBlob = new Blob([this.response], { "type": "audio/mpeg" });
+          var audioURL = window.URL.createObjectURL(oBlob);
+          var audio = new Audio();
+          audio.src = audioURL;
+          audio.play();
+      }
+  };
+
+  var data = {
+      text: s,
+      voice_settings: { stability: 0, similarity_boost: 0 }
+  };
+
+  oHttp.responseType = "arraybuffer";
+  oHttp.send(JSON.stringify(data));
+}
 
   function handleSwipe() {
     setSwpDwn((swpDwn) => !swpDwn);
@@ -113,19 +144,20 @@ function Layout() {
       .then((res) => {
         msgs.push(res.data.choices[0].message);
         setChats(msgs);
-        window.scrollTo(0, 1e10);
+        // window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
         // speak({text: assistantMessage.reply})
         speech.text = assistantMessage.reply;
-        speechSynthesis.speak(speech);
-        speech.onstart = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
-        speech.onend = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
+        // speechSynthesis.speak(speech);
+        ElevenLabsTextToSpeech(speech.text)
+        // speech.onstart = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
+        // speech.onend = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
         notify();
         // BotAudio(assistantMessage.reply, handleTalk);
         setSpin(false);
@@ -160,7 +192,7 @@ function Layout() {
       let feedback = AssistantMsg.feedback;
       toast(feedback, {
       position: "top-center",
-      autoClose: 5000,
+      autoClose: 6000,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
