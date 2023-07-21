@@ -72,7 +72,7 @@
       position: absolute;
       bottom: 40%;
       padding: 0;
-      margin: auto 20px;
+      /* margin: auto 20px; */
     }
     .button {
       position: absolute;
