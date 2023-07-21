@@ -53,17 +53,18 @@
 .userSpeakingBoxContainer{
   display: flex;
   justify-content: space-between;
-  height: 64px;
+  height: 48px;
   --boxSize: 8px;
   --gutter: 4px;
-  width: calc((var(--boxSize) + var(--gutter)) * 5);
+  /* width: calc((var(--boxSize) + var(--gutter)) * 5); */
+  width: 48px;
 }
 
 .userSpeakingBox{
-  transform: scaleY(.4);
+  transform: scaleY(0.4);
   height: 100%;
   width: var(--boxSize);
-  background: #12E2DC;
+  background: rgba(255, 0, 0, 1);
   animation-duration: 1.2s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
@@ -92,22 +93,22 @@
 
 @keyframes quiet {
   25%{
-    transform: scaleY(.6);
+    transform: scaleY(.5);
   }
   50%{
-    transform: scaleY(.4);
+    transform: scaleY(.3);
   }
   75%{
-    transform: scaleY(.8);
+    transform: scaleY(.4);
   }
 }
 
 @keyframes normal {
   25%{
-    transform: scaleY(1);
+    transform: scaleY(.7);
   }
   50%{
-    transform: scaleY(.4);
+    transform: scaleY(.3);
   }
   75%{
     transform: scaleY(.6);
@@ -115,12 +116,12 @@
 }
 @keyframes loud {
   25%{
-    transform: scaleY(1);
+    transform: scaleY(.7);
   }
   50%{
     transform: scaleY(.4);
   }
   75%{
-    transform: scaleY(1.2);
+    transform: scaleY(.6);
   }
 }

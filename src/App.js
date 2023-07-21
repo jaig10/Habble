@@ -7,6 +7,8 @@ import Layout from "./Layout";
 import LayoutWeb from "./LayoutWeb";
 import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
+import ChooseAvatar from "./pages/ChooseAvatar";
+import Hangup from "./pages/Hangup";
 
 export const App = () => {
   const [width, setWidth] = React.useState(window.innerWidth);
@@ -38,11 +40,12 @@ export const App = () => {
       />
       <Router>
         <Routes>
-          <Route path="/chat" element={<Chatbot />} />
-          <Route
-            path="/"
-            element={width < breakpoint ? <Layout /> : <LayoutWeb />}
-          />
+            {/* <Route path='/chat' element={<Chatbot/>} /> */}
+            <Route path='/' element={<ChooseAvatar/>}/> {/*Change this to homePage */}
+            <Route path='/avatar' element={<ChooseAvatar/>}/>
+            <Route path='/hangup' element={<Hangup/>}/>
+            <Route path='/talk' element={width < breakpoint ? <Layout /> : <LayoutWeb />} />
+            {/* <Route path='/testing' element={<Home/>} /> */}
         </Routes>
       </Router>
     </>
