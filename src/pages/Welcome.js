@@ -47,7 +47,7 @@ function Welcome() {
               Are you ready to start?
             </span>
           </div>
-          <div className="wl-pic w-80  flex justify-center">
+          <div className="wl-pic w-80 justify-center hidden md:flex">
             <img className="flex " src={wlPic} />
           </div>
           <div className="button">
