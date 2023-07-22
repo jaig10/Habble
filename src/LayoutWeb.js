@@ -334,7 +334,6 @@ function ElevenLabsTextToSpeech(s) {
         </div>
         <div
           className={`${hungup?"hangup":""} chats ${chatVisible} bg-white  absolute top-0 right-0 `}
-          style={{height: "485px", overflowY: "auto"}}
         >
           <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
             <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">
