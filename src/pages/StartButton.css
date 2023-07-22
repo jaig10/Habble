@@ -43,7 +43,6 @@
     /* align-items: end; */
   }
   .wl-text{
-    /* padding-left: 10%; */
     grid-area: text;
   }
   .wl-pic {

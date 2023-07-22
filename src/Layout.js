@@ -45,6 +45,8 @@ function ElevenLabsTextToSpeech(s) {
           var oBlob = new Blob([this.response], { "type": "audio/mpeg" });
           var audioURL = window.URL.createObjectURL(oBlob);
           var audio = new Audio();
+          handleTalk();
+          audio.addEventListener('ended', ()=>{handleTalk()});
           audio.src = audioURL;
           audio.play();
       }
@@ -228,6 +230,7 @@ function ElevenLabsTextToSpeech(s) {
               className="rounded-full"
               src={`/${botPersonality}.png`}
               alt={botPersonality}
+              style={{opacity: spin ? 0.5 : 1}}
             ></img>
             {spin && <span class="loader"></span>}
             {talk && (

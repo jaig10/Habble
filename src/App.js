@@ -42,11 +42,8 @@ export const App = () => {
       />
       <Router>
         <Routes>
-          {/* <Route path="/chat" element={<Chatbot />} /> */}
           <Route path="/language" element={<Language />} />
           <Route path="/" element={<Welcome />} />
-            {/* <Route path='/chat' element={<Chatbot/>} /> */}
-             {/*Change this to homePage */}
             <Route path='/avatar' element={<ChooseAvatar/>}/>
             <Route path='/hangup' element={<Hangup/>}/>
             <Route path='/talk' element={width < breakpoint ? <Layout /> : <LayoutWeb />} />

@@ -48,6 +48,8 @@ function ElevenLabsTextToSpeech(s) {
           var oBlob = new Blob([this.response], { "type": "audio/mpeg" });
           var audioURL = window.URL.createObjectURL(oBlob);
           var audio = new Audio();
+          handleTalk();
+          audio.addEventListener('ended', ()=>{handleTalk()});
           audio.src = audioURL;
           audio.play();
       }
@@ -229,24 +231,15 @@ function ElevenLabsTextToSpeech(s) {
         />
       </svg>
       <div className="main relative w-1/2 ">
-      {/* select personality */}
-      {/* <div class={chats.length>0? "hidden" : "inline-flex rounded-md shadow-sm"} role="group">
-        <button onClick={()=>setBotPersonality("emma")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-        Emma (kind, helpful)
-        </button>
-        <button onClick={()=>setBotPersonality("max")} type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-        Max (witty, funny)
-        </button>
-      </div> */}
-
         <div
           className={`voices ${chatVisible} bg-grey flex flex-col justify-center items-center pt-8 rounded-lg`}
         >
-          <div className="image flex justify-center items-center mb-4">
+          <div className="image flex justify-center items-center mb-4" >
             <img
               className="rounded-full"
               src={`/${botPersonality}.png`}
               alt={botPersonality}
+              style={{opacity: spin ? 0.5 : 1}}
             ></img>
             {spin && <span class="loader"></span>}
             {/* <svg width="196" height="196" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -255,8 +248,8 @@ function ElevenLabsTextToSpeech(s) {
             {talk && (
               <svg
                 className="absolute"
-                width="170"
-                height="170"
+                width="168"
+                height="168"
                 viewBox="0 0 236 236"
                 preserveAspectRatio="xMidYMin"
                 fill="none"
@@ -341,6 +334,7 @@ function ElevenLabsTextToSpeech(s) {
         </div>
         <div
           className={`${hungup?"hangup":""} chats ${chatVisible} bg-white  absolute top-0 right-0 `}
+          style={{height: "485px", overflowY: "auto"}}
         >
           <div className="swipe-down-container flex flex-col bg-white h-[100%] rounded-b-3xl">
             <div className="chat m-4 flex-col flex gap-5 overflow-y-auto">
