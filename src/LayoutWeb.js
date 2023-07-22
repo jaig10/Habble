@@ -145,16 +145,16 @@ function ElevenLabsTextToSpeech(s) {
         // window.scrollTo(0, 1e10);
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
         speech.text = assistantMessage.reply;
-        ElevenLabsTextToSpeech(speech.text)
-        // speechSynthesis.speak(speech);
-        // speech.onstart = () =>{
-        //   handleTalk();
-        //   console.log("inside speech");
-        // }
-        // speech.onend = () =>{
-        //   handleTalk();
-        //   console.log("inside speech");
-        // }
+        // ElevenLabsTextToSpeech(speech.text)
+        speechSynthesis.speak(speech);
+        speech.onstart = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
+        speech.onend = () =>{
+          handleTalk();
+          console.log("inside speech");
+        }
         notify();
         // BotAudio(assistantMessage.reply, handleTalk);
         setSpin(false);
