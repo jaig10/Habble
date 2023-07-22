@@ -44,13 +44,15 @@
   }
   .wl-text{
     grid-area: text;
+    
+    font-family: "Jua", Helvetica;
   }
   .wl-pic {
     grid-area: pic;
     justify-self: center;
   }
 
-  @media only screen and (max-width: 1024px) {
+  /* @media only screen and (max-width: 1024px) {
     .grid-container {
       display: block;
       grid-template-columns: none;
@@ -70,9 +72,9 @@
     .wl-text {
       position: absolute;
       bottom: 40%;
-      padding: 0;
+      padding: 0; */
       /* margin: auto 20px; */
-    }
+    /* }
     .button {
       position: absolute;
       bottom: 15%;
@@ -95,7 +97,7 @@
     .last{
       margin-top: 5px;
     }
-  }
+  } */
   
 
   /* language.js */
@@ -116,7 +118,7 @@ h2{
   bottom: 10%;
   right: 10%;
 }
-@media only screen and (max-width: 1024px){
+/* @media only screen and (max-width: 1024px){
   .next{
     right: 50%;
     transform: translate(50%);
@@ -132,4 +134,4 @@ h2{
     padding: 10%;
     margin: 10% 10%;
   }
-}
+} */

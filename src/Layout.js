@@ -15,7 +15,7 @@ delete configuration.baseOptions.headers["User-Agent"]; //because calling api fr
 const openai = new OpenAIApi(configuration);
 console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
 
-var ELEVEN_LABS_API_KEY = "270a3be10b0697dc648324751c153a0b"; //API Key
+var ELEVEN_LABS_API_KEY = "2c399ab9a6f6ba56f4bdb2fe94e1b0bf"; //API Key
 
 function Layout() {
   const navigate = useNavigate()
@@ -150,16 +150,16 @@ function ElevenLabsTextToSpeech(s) {
         let assistantMessage = JSON.parse(res.data.choices[0].message.content);
         // speak({text: assistantMessage.reply})
         speech.text = assistantMessage.reply;
-        // ElevenLabsTextToSpeech(speech.text)
-        speechSynthesis.speak(speech);
-        speech.onstart = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
-        speech.onend = () =>{
-          handleTalk();
-          console.log("inside speech");
-        }
+        ElevenLabsTextToSpeech(speech.text)
+        // speechSynthesis.speak(speech);
+        // speech.onstart = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
+        // speech.onend = () =>{
+        //   handleTalk();
+        //   console.log("inside speech");
+        // }
         notify();
         // BotAudio(assistantMessage.reply, handleTalk);
         setSpin(false);
