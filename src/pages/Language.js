@@ -15,7 +15,7 @@ function Language() {
             <img src="/habble_logo_green.JPG" alt="Habble" className='h-20'/>
           </div>
           <div className='text-center my-12'>
-            <h3 className='text-3xl font-jua'>Choose your Habble buddy!</h3>
+            <h3 className='text-3xl font-jua'>Choose your Language!</h3>
           </div>
           {/* avatar cards container*/}
           <div className='flex flex-col md:flex-row gap-4 items-center justify-center'>
