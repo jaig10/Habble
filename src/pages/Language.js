@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom"
 import usa from '../Utils/usa.png'
 function Language() {
     const navigate = useNavigate();
-    const [selected, setSelected] = useState(false);
+    const [selected, setSelected] = useState(true);
     const toggleSelect = () =>{
       setSelected((selected) => !selected) ;
     }

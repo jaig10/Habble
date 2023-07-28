@@ -10,7 +10,7 @@ function Welcome() {
         <img src="/habble_logo_green.JPG" className="h-20" alt="Hablle"/>
       </div>
       <div className="">
-        <div className="flex justify-between mx-28 mt-24 mr-36">
+        <div className="flex justify-between mx:8 md:mx-28 mt-24 md:mr-36">
           <div className="flex flex-col gap-1 wl-text md:px-10 justify-center">
             <span className="text-black text-3xl font-normal tracking-widest block">
               Speak Easy
@@ -29,7 +29,7 @@ function Welcome() {
             <img className="flex " src={wlPic} />
           </div>
         </div>
-          <div className="flex justify-center mt-14 md:justify-end md:mx-40 md:mt-32">
+          <div className="flex justify-center mt-40 md:justify-end md:mx-40 md:mt-32">
             <button className="css-button-sharp--blue -mr-1 -mt-1" onClick={()=>{navigate("/language")}}>START</button>
           </div>
       </div>

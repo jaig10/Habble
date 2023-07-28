@@ -122,6 +122,10 @@ function ElevenLabsTextToSpeech(s) {
     voices.filter(function(voice) {
       return voice.name == "Microsoft Mark - English (United States)"
     })[0]
+    ??
+    voices.filter(function(voice) {
+      return voice.name == "Microsoft David - English (United States)"
+    })[0]
   }
   // let voices = []; // global array
 
