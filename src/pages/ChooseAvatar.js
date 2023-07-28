@@ -64,7 +64,7 @@ const ChooseAvatar = () => {
         </div>
         {/* start button */}
         <div className="flex md:justify-end justify-center mx-auto mt-10 md:mt-16 md:mx-40 w-34">
-        <button className="css-button-sharp--blue" onClick={()=>{navigate("/talk")}}>NEXT</button>
+        <button className="css-button-sharp--blue" onClick={()=>{navigate("/talk", {state:{botPersonality: selectedAvatar}})}}>NEXT</button>
       </div>
       </div>
     </>

@@ -97,22 +97,48 @@ function ElevenLabsTextToSpeech(s) {
   const { speak } = useSpeechSynthesis();
   let speech = new SpeechSynthesisUtterance();
   speech.lang = "en-US";
-  let voices = []; // global array
+  // speech.voice=window.speechSynthesis.getVoices()[1]
+  console.log(window.speechSynthesis.getVoices())
+  if(botPersonality==="Emma"){
+    let voices = speechSynthesis.getVoices();
+    speech.voice = voices.filter(function(voice) {
+      return voice.name == "Google UK English Female"
+    })[0]
+    ??
+    voices.filter(function(voice) {
+      return voice.name == "Microsoft Zira - English (United States)"
+    })[0]
+    ??
+    voices.filter(function(voice) {
+      return voice.name == "Google US English"
+    })[0]
+  }
+  else{
+    let voices = speechSynthesis.getVoices();
+    speech.voice = voices.filter(function(voice) {
+      return voice.name == "Google UK English Male"
+    })[0]
+    ??
+    voices.filter(function(voice) {
+      return voice.name == "Microsoft Mark - English (United States)"
+    })[0]
+  }
+  // let voices = []; // global array
 
-  window.speechSynthesis.onvoiceschanged = () => {
-    // Get List of Voices
-    voices = window.speechSynthesis.getVoices();
-    // console.log(voices);
-    speech.voice = voices[3];
-    // speech.voice = res1.audioUrl;
-    // console.log(voices[3]);
-    // console.log(speech.lang);
-    // Initially set the First Voice in the Array.
+  // window.speechSynthesis.onvoiceschanged = () => {
+  //   // Get List of Voices
+  //   voices = window.speechSynthesis.getVoices();
+  //   // console.log(voices);
+  //   speech.voice = voices[3];
+  //   // speech.voice = res1.audioUrl;
+  //   // console.log(voices[3]);
+  //   // console.log(speech.lang);
+  //   // Initially set the First Voice in the Array.
 
-    // Set the Voice Select List. (Set the Index as the value, which we'll use later when the user updates the Voice using the Select Menu.)
-    // let voiceSelect = document.querySelector("#voices");
-    // voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
-  };
+  //   // Set the Voice Select List. (Set the Index as the value, which we'll use later when the user updates the Voice using the Select Menu.)
+  //   // let voiceSelect = document.querySelector("#voices");
+  //   // voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
+  // };
 
   const chat = async ( message) => {
     // e.preventDefault();
@@ -325,7 +351,6 @@ function ElevenLabsTextToSpeech(s) {
         </div>
         <div
           className="w-12 h-12 mx-2 bg-lightgrey rounded-full p-5 flex justify-center items-center"
-          onClick={notify}
         >
           <span className="material-symbols-outlined call" onClick={()=>{navigate('/hangup', {state:{chats: chats}})}}>phone_disabled</span>
         </div>
