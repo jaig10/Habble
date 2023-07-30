@@ -16,7 +16,7 @@ const openai = new OpenAIApi(configuration);
 console.log(process.env.REACT_APP_OPENAI_API_TOKEN);
 
 
-var ELEVEN_LABS_API_KEY = "270a3be10b0697dc648324751c153a0b"; //API Key
+var ELEVEN_LABS_API_KEY = "a72bd4541f405f431622ac616b155640"; //API Key
 
 function LayoutWeb() {
   const location = useLocation()
